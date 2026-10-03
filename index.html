@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>GameBank</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div class="app">
+
+        <div id="status" class="status">
+            Cargando...
+        </div>
+
+        <!-- REGISTRO -->
+
+        <section id="registerBox" class="card">
+
+            <h1>GameBank</h1>
+
+            <p class="subtitle">
+                Crear cuenta
+            </p>
+
+            <input
+                id="registerUsername"
+                type="text"
+                placeholder="Nombre de usuario"
+                autocomplete="username"
+            >
+
+            <input
+                id="registerEmail"
+                type="email"
+                placeholder="Correo electrónico"
+                autocomplete="email"
+            >
+
+            <input
+                id="registerPassword"
+                type="password"
+                placeholder="Contraseña"
+                autocomplete="new-password"
+            >
+
+            <button id="registerBtn">
+                Crear cuenta
+            </button>
+
+            <p id="registerMessage"></p>
+
+            <button
+                id="showLoginBtn"
+                class="secondary"
+            >
+                Ya tengo una cuenta
+            </button>
+
+        </section>
+
+
+        <!-- LOGIN -->
+
+        <section
+            id="loginBox"
+            class="card hidden"
+        >
+
+            <h1>GameBank</h1>
+
+            <p class="subtitle">
+                Iniciar sesión
+            </p>
+
+            <input
+                id="loginEmail"
+                type="email"
+                placeholder="Correo electrónico"
+                autocomplete="email"
+            >
+
+            <input
+                id="loginPassword"
+                type="password"
+                placeholder="Contraseña"
+                autocomplete="current-password"
+            >
+
+            <button id="loginBtn">
+                Iniciar sesión
+            </button>
+
+            <p id="loginMessage"></p>
+
+            <button
+                id="showRegisterBtn"
+                class="secondary"
+            >
+                Crear una cuenta
+            </button>
+
+        </section>
+
+
+        <!-- VERIFICACIÓN -->
+
+        <section
+            id="verifyBox"
+            class="card hidden"
+        >
+
+            <h1>Verificar correo</h1>
+
+            <p>
+                Escribe el código que recibiste por correo.
+            </p>
+
+            <input
+                id="verifyEmail"
+                type="email"
+                placeholder="Correo electrónico"
+            >
+
+            <input
+                id="verifyCode"
+                type="text"
+                inputmode="numeric"
+                maxlength="6"
+                placeholder="Código de 6 números"
+            >
+
+            <button id="verifyBtn">
+                Verificar
+            </button>
+
+            <button
+                id="resendBtn"
+                class="secondary"
+            >
+                Reenviar código
+            </button>
+
+            <p id="verifyMessage"></p>
+
+        </section>
+
+
+        <!-- DASHBOARD -->
+
+        <section
+            id="dashboard"
+            class="card hidden"
+        >
+
+            <h1>GameBank</h1>
+
+            <p>
+                Bienvenido,
+                <strong id="usernameLabel">
+                    Usuario
+                </strong>
+            </p>
+
+            <div class="balance">
+
+                <span>GamePoints</span>
+
+                <strong id="pointsBalance">
+                    0
+                </strong>
+
+            </div>
+
+            <div class="menu">
+
+                <button id="transferBtn">
+                    Transferir
+                </button>
+
+                <button id="redeemBtn">
+                    Canjear
+                </button>
+
+                <button id="gamesBtn">
+                    Juegos
+                </button>
+
+                <button id="historyBtn">
+                    Historial
+                </button>
+
+            </div>
+
+            <div id="contentPanel"></div>
+
+            <button
+                id="logoutBtn"
+                class="secondary"
+            >
+                Cerrar sesión
+            </button>
+
+        </section>
+
+    </div>
+
+    <script
+        type="module"
+        src="./app.js"
+    ></script>
+
+</body>
+</html>
