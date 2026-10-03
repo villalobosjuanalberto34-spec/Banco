@@ -1,10 +1,14 @@
-const SUPABASE_URL = "https://zhctskrzbyxxpkskxvre.supabase.co";
-const SUPABASE_KEY = "sb_publishable_ShhQ5CZMoxV7GorozoTd9A_O9TaSi_a";
+const SUPABASE_URL = "https://kqvjyahyvxlcimaxszmp.supabase.co";
+const SUPABASE_KEY = "sb_publishable_mD24M9ue05M3Nbl3yAPBTA_KkDvRe_o";
 
 const supabase = window.supabase.createClient(
     SUPABASE_URL,
     SUPABASE_KEY
 );
+
+// ===============================
+// ELEMENTOS
+// ===============================
 
 const registerBox = document.getElementById("registerBox");
 const loginBox = document.getElementById("loginBox");
@@ -27,7 +31,12 @@ const showRegisterBtn = document.getElementById("showRegisterBtn");
 const usernameLabel = document.getElementById("usernameLabel");
 const logoutBtn = document.getElementById("logoutBtn");
 
+// ===============================
+// CAMBIAR PANTALLA
+// ===============================
+
 function showBox(box) {
+
     registerBox.style.display = "none";
     loginBox.style.display = "none";
     dashboard.style.display = "none";
@@ -35,183 +44,247 @@ function showBox(box) {
     box.style.display = "block";
 }
 
-function message(element, text, error = false) {
+// ===============================
+// MENSAJES
+// ===============================
+
+function showMessage(element, text, error = false) {
+
+    if (!element) return;
+
     element.textContent = text;
-    element.style.color = error ? "#ff4d4d" : "#22c55e";
+
+    element.style.color = error
+        ? "#ff4d4d"
+        : "#22c55e";
 }
 
 // ===============================
-// MOSTRAR REGISTRO
+// IR A LOGIN
 // ===============================
 
-showLoginBtn.addEventListener("click", () => {
-    registerMessage.textContent = "";
-    showBox(loginBox);
-});
+if (showLoginBtn) {
 
-showRegisterBtn.addEventListener("click", () => {
-    loginMessage.textContent = "";
-    showBox(registerBox);
-});
+    showLoginBtn.addEventListener("click", () => {
+
+        registerMessage.textContent = "";
+
+        showBox(loginBox);
+    });
+}
 
 // ===============================
-// REGISTRO
+// IR A REGISTRO
 // ===============================
 
-registerBtn.addEventListener("click", async () => {
+if (showRegisterBtn) {
 
-    const username = registerUsername.value.trim();
-    const email = registerEmail.value.trim();
-    const password = registerPassword.value;
+    showRegisterBtn.addEventListener("click", () => {
 
-    if (!username || !email || !password) {
-        message(
-            registerMessage,
-            "Completa todos los campos.",
-            true
-        );
-        return;
-    }
+        loginMessage.textContent = "";
 
-    if (password.length < 6) {
-        message(
-            registerMessage,
-            "La contraseña debe tener mínimo 6 caracteres.",
-            true
-        );
-        return;
-    }
+        showBox(registerBox);
+    });
+}
 
-    registerBtn.disabled = true;
-    registerBtn.textContent = "Creando...";
+// ===============================
+// CREAR CUENTA
+// ===============================
 
-    try {
+if (registerBtn) {
 
-        const { data, error } = await supabase.auth.signUp({
-            email: email,
-            password: password,
-            options: {
-                data: {
-                    username: username
-                }
+    registerBtn.addEventListener("click", async () => {
+
+        const username =
+            registerUsername.value.trim();
+
+        const email =
+            registerEmail.value.trim();
+
+        const password =
+            registerPassword.value;
+
+        if (!username || !email || !password) {
+
+            showMessage(
+                registerMessage,
+                "Completa todos los campos.",
+                true
+            );
+
+            return;
+        }
+
+        if (password.length < 6) {
+
+            showMessage(
+                registerMessage,
+                "La contraseña debe tener mínimo 6 caracteres.",
+                true
+            );
+
+            return;
+        }
+
+        registerBtn.disabled = true;
+        registerBtn.textContent = "Creando...";
+
+        try {
+
+            const { data, error } =
+                await supabase.auth.signUp({
+
+                    email: email,
+
+                    password: password,
+
+                    options: {
+
+                        data: {
+                            username: username
+                        }
+
+                    }
+
+                });
+
+            if (error) {
+
+                console.error(error);
+
+                showMessage(
+                    registerMessage,
+                    error.message,
+                    true
+                );
+
+                registerBtn.disabled = false;
+                registerBtn.textContent = "Crear cuenta";
+
+                return;
             }
-        });
 
-        if (error) {
-            message(
+            if (data.session) {
+
+                showMessage(
+                    registerMessage,
+                    "Cuenta creada correctamente."
+                );
+
+                setTimeout(() => {
+
+                    loadDashboard(data.user);
+
+                }, 500);
+
+            } else {
+
+                showMessage(
+                    registerMessage,
+                    "La cuenta fue creada, pero Supabase todavía requiere confirmación de correo.",
+                    true
+                );
+
+            }
+
+        } catch (error) {
+
+            console.error(error);
+
+            showMessage(
                 registerMessage,
-                error.message,
+                "No se pudo crear la cuenta.",
                 true
             );
 
-            registerBtn.disabled = false;
-            registerBtn.textContent = "Crear cuenta";
-            return;
         }
 
-        // Si Supabase crea la cuenta y devuelve sesión
-        if (data.session) {
-
-            message(
-                registerMessage,
-                "Cuenta creada correctamente."
-            );
-
-            setTimeout(() => {
-                loadDashboard(data.session.user);
-            }, 500);
-
-        } else {
-
-            // Si Supabase tiene activada la confirmación de email,
-            // la cuenta puede quedar esperando confirmación.
-            message(
-                registerMessage,
-                "Cuenta creada. Si Supabase pide confirmar el correo, desactiva la confirmación de email en Authentication."
-            );
-        }
-
-    } catch (err) {
-
-        message(
-            registerMessage,
-            "Ocurrió un error al crear la cuenta.",
-            true
-        );
-
-        console.error(err);
-
-    }
-
-    registerBtn.disabled = false;
-    registerBtn.textContent = "Crear cuenta";
-});
+        registerBtn.disabled = false;
+        registerBtn.textContent = "Crear cuenta";
+    });
+}
 
 // ===============================
-// LOGIN
+// INICIAR SESIÓN
 // ===============================
 
-loginBtn.addEventListener("click", async () => {
+if (loginBtn) {
 
-    const email = loginEmail.value.trim();
-    const password = loginPassword.value;
+    loginBtn.addEventListener("click", async () => {
 
-    if (!email || !password) {
-        message(
-            loginMessage,
-            "Escribe tu correo y contraseña.",
-            true
-        );
-        return;
-    }
+        const email =
+            loginEmail.value.trim();
 
-    loginBtn.disabled = true;
-    loginBtn.textContent = "Entrando...";
+        const password =
+            loginPassword.value;
 
-    try {
+        if (!email || !password) {
 
-        const { data, error } =
-            await supabase.auth.signInWithPassword({
-                email: email,
-                password: password
-            });
-
-        if (error) {
-
-            message(
+            showMessage(
                 loginMessage,
-                error.message,
+                "Escribe tu correo y contraseña.",
                 true
             );
 
-            loginBtn.disabled = false;
-            loginBtn.textContent = "Entrar";
             return;
         }
 
-        loadDashboard(data.user);
+        loginBtn.disabled = true;
+        loginBtn.textContent = "Entrando...";
 
-    } catch (err) {
+        try {
 
-        message(
-            loginMessage,
-            "No se pudo iniciar sesión.",
-            true
-        );
+            const { data, error } =
+                await supabase.auth.signInWithPassword({
 
-        console.error(err);
+                    email: email,
 
-    }
+                    password: password
 
-    loginBtn.disabled = false;
-    loginBtn.textContent = "Entrar";
-});
+                });
+
+            if (error) {
+
+                console.error(error);
+
+                showMessage(
+                    loginMessage,
+                    error.message,
+                    true
+                );
+
+                loginBtn.disabled = false;
+                loginBtn.textContent = "Entrar";
+
+                return;
+            }
+
+            loadDashboard(data.user);
+
+        } catch (error) {
+
+            console.error(error);
+
+            showMessage(
+                loginMessage,
+                "No se pudo iniciar sesión.",
+                true
+            );
+
+        }
+
+        loginBtn.disabled = false;
+        loginBtn.textContent = "Entrar";
+    });
+}
 
 // ===============================
-// DASHBOARD
+// ABRIR DASHBOARD
 // ===============================
 
 function loadDashboard(user) {
+
+    if (!user) return;
 
     showBox(dashboard);
 
@@ -220,40 +293,102 @@ function loadDashboard(user) {
         user.email?.split("@")[0] ||
         "Usuario";
 
-    usernameLabel.textContent = username;
+    if (usernameLabel) {
+
+        usernameLabel.textContent =
+            username;
+    }
 }
 
 // ===============================
 // CERRAR SESIÓN
 // ===============================
 
-logoutBtn.addEventListener("click", async () => {
+if (logoutBtn) {
 
-    await supabase.auth.signOut();
+    logoutBtn.addEventListener("click", async () => {
 
-    registerUsername.value = "";
-    registerEmail.value = "";
-    registerPassword.value = "";
+        await supabase.auth.signOut();
 
-    loginEmail.value = "";
-    loginPassword.value = "";
+        if (registerUsername)
+            registerUsername.value = "";
 
-    showBox(loginBox);
-});
+        if (registerEmail)
+            registerEmail.value = "";
+
+        if (registerPassword)
+            registerPassword.value = "";
+
+        if (loginEmail)
+            loginEmail.value = "";
+
+        if (loginPassword)
+            loginPassword.value = "";
+
+        showBox(loginBox);
+    });
+}
 
 // ===============================
-// COMPROBAR SESIÓN AL ABRIR
+// COMPROBAR SESIÓN
 // ===============================
 
 async function checkSession() {
 
-    const { data } = await supabase.auth.getSession();
+    try {
 
-    if (data.session) {
-        loadDashboard(data.session.user);
-    } else {
+        const { data, error } =
+            await supabase.auth.getSession();
+
+        if (error) {
+
+            console.error(error);
+
+            showBox(registerBox);
+
+            return;
+        }
+
+        if (data.session) {
+
+            loadDashboard(
+                data.session.user
+            );
+
+        } else {
+
+            showBox(registerBox);
+
+        }
+
+    } catch (error) {
+
+        console.error(error);
+
         showBox(registerBox);
     }
 }
+
+// ===============================
+// CAMBIOS DE SESIÓN
+// ===============================
+
+supabase.auth.onAuthStateChange(
+    (event, session) => {
+
+        if (session) {
+
+            loadDashboard(
+                session.user
+            );
+
+        }
+
+    }
+);
+
+// ===============================
+// INICIAR
+// ===============================
 
 checkSession();
